@@ -7,12 +7,19 @@ from rest_framework import generics
 from .models import *
 from .serializers import PostSerializer
 from .serializers import CategorySerializer
+from django_filters import rest_framework as filters
+from .filters import PostFilter
+from rest_framework import filters as fr
 
 
 class PostListView(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.DjangoFilterBackend, fr.OrderingFilter)
+    ordering_fields = ['id', 'created_date', 'categories']
+    filterset_class = PostFilter
+
 
 
 class PostCreateView(generics.CreateAPIView):
@@ -30,6 +37,8 @@ class CategoryListView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ['title']
 
 
 class CategoryCreateView(generics.CreateAPIView):
